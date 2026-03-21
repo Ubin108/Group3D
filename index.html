@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Group3D — Open-Vocabulary 3D Object Detection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #ffffff;
+  --bg2:       #f8f8f6;
+  --bg3:       #f2f1ee;
+  --surface:   #ffffff;
+  --border:    #e4e2dc;
+  --border2:   #ccc9c0;
+  --text:      #1a1917;
+  --muted:     #6b6860;
+  --light:     #9b9890;
+  --accent:    #2554e8;
+  --accent2:   #1a3fba;
+  --accentbg:  #eef1fd;
+  --gold:      #c47b0e;
+  --goldbg:    #fdf4e3;
+  --green:     #1a8c55;
+  --greenbg:   #e8f8f0;
+  --red:       #c0392b;
+  --radius:    8px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem; height: 54px;
+}
+.nav-logo { font-family: 'Space Grotesk', sans-serif; font-weight: 800; font-size: 1rem; color: var(--accent); letter-spacing: -0.01em; }
+.nav-links { display: flex; gap: 2rem; }
+.nav-links a {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem; font-weight: 600;
+  letter-spacing: 0.07em; text-transform: uppercase;
+  color: var(--muted); text-decoration: none; transition: color .2s;
+}
+.nav-links a:hover { color: var(--accent); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  border-bottom: 1px solid var(--border);
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 900px 500px at 50% -10%, rgba(37,84,232,0.06) 0%, transparent 70%),
+    radial-gradient(ellipse 400px 300px at 20% 110%, rgba(196,123,14,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero > * { position: relative; z-index: 1; }
+
+h1 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(1.5rem, 4.5vw, 3.0rem);
+  font-weight: 800; line-height: 1.1;
+  letter-spacing: -0.03em; max-width: 1100px;
+  margin: 0 auto 1.4rem;
+  animation: fadeDown .6s .08s ease both;
+}
+h1 .hl  { color: var(--accent); }
+h1 .hl2 { color: var(--gold); }
+
+.authors { font-family: 'Space Grotesk', sans-serif; font-size: 1.3rem; margin-bottom: 0; animation: fadeDown .6s .14s ease both; }
+.institute { font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; margin-bottom: 2rem; animation: fadeDown .6s .14s ease both; }
+.inst-gap { margin-left: 25px; }
+
+.btn-row { display: flex; gap: 0.7rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3.5rem; animation: fadeDown .6s .2s ease both; }
+.btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 9px 20px; border-radius: 6px;
+  font-family: 'Space Grotesk', sans-serif; font-size: 0.82rem; font-weight: 700;
+  text-decoration: none; cursor: pointer; border: none;
+  transition: transform .15s, box-shadow .15s, background .2s;
+}
+.btn:hover { transform: translateY(-2px); }
+.btn-solid { background: var(--accent); color: #fff; }
+.btn-solid:hover { box-shadow: 0 4px 18px rgba(37,84,232,0.3); background: var(--accent2); }
+.btn-ghost { background: var(--bg); color: var(--text); border: 1.5px solid var(--border2); }
+.btn-ghost:hover { border-color: var(--accent); color: var(--accent); background: var(--accentbg); }
+
+/* ── FEATURE BADGES ── */
+.feature-badges {
+  display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+  margin-bottom: 3rem;
+  animation: fadeDown .6s .26s ease both;
+}
+.feature-badge {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 22px; width: 230px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.feature-badge:hover { border-color: var(--accent); box-shadow: 0 2px 12px rgba(37,84,232,0.08); }
+.feature-badge-icon { font-size: 1.3rem; line-height: 1; }
+.feature-badge-title { font-family: 'Space Grotesk', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--text); }
+.feature-badge-desc { font-family: 'Inter', sans-serif; font-size: 0.72rem; color: var(--muted); text-align: center; }
+
+/* ── TEASER CAROUSEL ── */
+.teaser-carousel {
+  display: grid; grid-template-columns: 1fr 200px;
+  gap: 14px; max-width: 860px; margin: 0 auto;
+  animation: fadeUp .7s .28s ease both;
+  text-align: left; align-items: start;
+}
+.teaser-vid-box { background: #000; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; }
+.teaser-vid-box video { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
+.carousel-nav-bar { display: flex; align-items: center; justify-content: center; padding: 9px 14px; border-top: 1px solid var(--border); background: var(--bg2); gap: 10px; }
+.c-arr {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 40px; height: 64px; background: rgba(0,0,0,0.25);
+  border: none; color: #fff; font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background .15s; z-index: 10;
+}
+.c-arr:hover { background: rgba(0,0,0,0.5); }
+.c-arr.prev { left: 0; border-radius: 0 5px 5px 0; }
+.c-arr.next { right: 0; border-radius: 5px 0 0 5px; }
+.c-dots { display: flex; gap: 6px; align-items: center; }
+.c-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); cursor: pointer; transition: background .2s, transform .2s; }
+.c-dot.on { background: var(--accent); transform: scale(1.4); }
+.carousel-counter { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--light); }
+
+/* ── LABEL PANEL ── */
+.label-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; display: flex; flex-direction: column; overflow: hidden; }
+.label-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.label-list { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.label-list::-webkit-scrollbar { width: 4px; }
+.label-list::-webkit-scrollbar-track { background: transparent; }
+.label-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.label-item { display: flex; align-items: center; gap: 8px; padding: 6px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; opacity: 0; transform: translateX(6px); transition: opacity .28s ease, transform .28s ease; cursor: default; }
+.label-item.visible { opacity: 1; transform: translateX(0); }
+.label-item.expandable { cursor: pointer; transition: opacity .28s ease, transform .28s ease, border-color .15s, background .15s; }
+.label-item.expandable:hover { border-color: var(--border2); background: var(--bg2); }
+.label-item.selected { font-weight: 500; }
+.label-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.label-name { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text); flex: 1; }
+.label-count { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; background: var(--bg3); color: var(--muted); }
+
+/* ── SHARED LAYOUT ── */
+.section-wrap { max-width: 980px; margin: 0 auto; padding: 3.0rem 2rem; }
+
+/* ── UNIFIED SECTION STRUCTURE ── */
+.page-section { border-top: 1px solid var(--border); }
+.page-section-inner { max-width: 980px; margin: 0 auto; padding: 4.5rem 2rem; }
+.page-section-inner.wide { max-width: 1060px; }
+.page-section-inner.wider { max-width: 1200px; }
+.page-section-inner.narrow { max-width: 780px; }
+.section-label { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.5rem; }
+h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 2.8vw, 2rem); font-weight: 800; letter-spacing: -0.02em; line-height: 1.2; margin-bottom: 1.8rem; color: var(--text); }
+.reveal { opacity: 0; transform: translateY(22px); transition: opacity .65s ease, transform .65s ease; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+/* ── ABSTRACT ── */
+.abstract-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-left: 4px solid var(--accent); border-radius: var(--radius);
+  padding: 2.2rem 2.6rem;
+  font-family: 'Inter', sans-serif; font-size: 1rem; color: #3d3b38; line-height: 1.85;
+}
+.abstract-card p + p { margin-top: 1rem; }
+.abstract-card strong { color: var(--text); font-weight: 600; }
+.abstract-card em { color: var(--accent); font-style: italic; }
+.method-caption { padding: 1.5rem 2.6rem; font-size: 1rem; color: var(--text); }
+
+/* ── TABLES ── */
+.tables-wrap { max-width: 1060px; margin: 0 auto; padding: 4.5rem 2rem; }
+.table-block { margin-bottom: 3.5rem; }
+.table-block:last-child { margin-bottom: 0; }
+.table-scroll { overflow-x: auto; }
+.result-table { width: 100%; max-width: 900px; margin: 0 auto; border-collapse: collapse; font-size: 0.9rem; }
+.result-table thead tr { border-bottom: 2px solid #222; }
+.result-table th { text-align: left; padding: 8px 10px; font-weight: 600; font-family: 'Space Grotesk', sans-serif; font-size: 0.95rem; white-space: nowrap; }
+.result-table td { padding: 4px 8px; border-bottom: 1px solid #eee; white-space: nowrap; color: var(--text); text-align: center; }
+.result-table td:first-child { color: var(--text); font-weight: 500; text-align: left; max-width: 100px; }
+.result-table .ours { background: #f5f7ff; }
+.result-table .ours td:first-child { color: var(--accent); }
+.result-table td.check { text-align: center; color: #16a34a; font-size: 1rem; }
+.result-table td.cross { text-align: center; color: #dc2626; font-size: 1rem; }
+.result-table td a { color: inherit; text-decoration: none; }
+.result-table td a:hover { color: var(--accent); }
+.venue-badge { font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 400; color: var(--light); margin-left: 10px; vertical-align: middle; white-space: nowrap; }
+.result-table td.dash-c { text-align: center; color: #bbb; }
+.table-inner { max-width: 900px; margin: 0 auto; }
+.table-footnote { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--light); margin-top: 0.6rem; }
+.table-desc { font-family: 'Inter', sans-serif; font-size: 1rem; color: var(--text); margin-top: 1rem; line-height: 1.7; }
+
+/* ── QUALITATIVE ── */
+.qual-wrap { max-width: 1200px; margin: 0 auto; padding: 4.5rem 2rem; }
+.qual-legend { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-bottom: 12px; min-height: 24px; }
+.qual-legend-item {
+  display: flex; align-items: center; gap: 5px;
+  font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--text);
+  opacity: 0; transform: translateY(6px);
+  animation: legendIn .3s ease forwards;
+}
+@keyframes legendIn { to { opacity: 1; transform: translateY(0); } }
+.qual-legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.qual-slider { position: relative; border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+.qual-slide { display: none; }
+.qual-slide.active { display: block; }
+.qual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); }
+.qual-cell { background: var(--bg); position: relative; overflow: hidden; display: flex; flex-direction: column; height: 420px; width: 100%; }
+.qual-cell-header { display: flex; align-items: center; justify-content: center; height: 28px; background: var(--bg2); border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.glb-viewer { width: 100%; height: calc(420px - 28px); position: relative; background: var(--bg2); flex-shrink: 0; }
+.glb-viewer canvas { position: absolute; inset: 0; width: 100% !important; height: 100% !important; cursor: grab; }
+.glb-viewer canvas:active { cursor: grabbing; }
+.glb-viewer .qual-placeholder { position: absolute; inset: 0; }
+.qual-placeholder {
+  width: 100%; flex: 1; background: var(--bg3);
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+}
+.qual-placeholder-spinner {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 2.5px solid var(--border2);
+  border-top-color: var(--accent);
+  animation: spin .8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.qual-placeholder-text { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; color: var(--light); text-align: center; }
+.qual-col-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; padding: 0; border: none; background: none; white-space: nowrap; }
+.qual-col-label.gt { color: var(--muted); }
+.qual-col-label.pk { color: var(--green); }
+.qual-col-label.pf { color: var(--gold); }
+.qual-nav { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-top: 1.4rem; }
+.qual-arr { width: 34px; height: 34px; border-radius: 50%; background: var(--bg); border: 1.5px solid var(--border2); color: var(--text); font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all .2s; }
+.qual-arr:hover { border-color: var(--accent); color: var(--accent); background: var(--accentbg); }
+.qual-dots { display: flex; gap: 6px; }
+.qual-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); cursor: pointer; transition: background .2s, transform .2s; }
+.qual-dot.active { background: var(--accent); transform: scale(1.35); }
+.qual-caption { font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 1rem; line-height: 1.5; }
+
+/* ── BIBTEX ── */
+.bibtex-wrap { max-width: 780px; margin: 0 auto; padding: 4.5rem 2rem; }
+.bibtex-block { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.bibtex-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--bg3); }
+.bibtex-header-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; }
+.copy-btn { font-family: 'Space Grotesk', sans-serif; font-size: 0.72rem; font-weight: 600; padding: 4px 12px; border-radius: 4px; background: var(--bg); border: 1px solid var(--border2); color: var(--muted); cursor: pointer; transition: all .2s; }
+.copy-btn:hover { border-color: var(--accent); color: var(--accent); background: var(--accentbg); }
+.copy-btn.copied { background: var(--greenbg); border-color: rgba(26,140,85,0.3); color: var(--green); }
+pre.bibtex { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; line-height: 1.7; color: var(--text); padding: 1.4rem 1.6rem; overflow-x: auto; white-space: pre; margin: 0; }
+footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--light); }
+
+@keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+@media (max-width: 640px) {
+  .teaser-carousel { grid-template-columns: 1fr; }
+  .qual-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">Group3D</span>
+  <div class="nav-links">
+    <a href="#abstract">Abstract</a>
+    <a href="#method">Method</a>
+    <a href="#results">Results</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <h1>Group3D: <span class="hl">MLLM-Driven</span> Semantic Grouping<br>for <span class="hl2">Open-Vocabulary</span> 3D Object Detection</h1>
+  <p class="authors">Youbin Kim<sup>1</sup>, Jinho Park<sup>1</sup>, Hogun Park<sup>1</sup>, Eunbyung Park<sup>2</sup></p>
+  <p class="institute">
+    <span><sup>1</sup>Sungkyunkwan University</span>
+    <span class="inst-gap"><sup>2</sup>Yonsei University</span>
+  </p>
+  <div class="btn-row">
+    <a class="btn btn-solid" href="#">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Paper
+    </a>
+    <a class="btn btn-ghost" href="https://github.com/Ubin108/Group3D">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>Code
+    </a>
+  </div>
+
+  <div class="feature-badges">
+    <div class="feature-badge">
+      <span class="feature-badge-icon">🔤</span>
+      <span class="feature-badge-title">Open-vocabulary</span>
+      <span class="feature-badge-desc">Beyond fixed category taxonomy</span>
+    </div>
+    <div class="feature-badge">
+      <span class="feature-badge-icon">🖼️</span>
+      <span class="feature-badge-title">Multi-view RGB</span>
+      <span class="feature-badge-desc">No point cloud or depth required</span>
+    </div>
+    <div class="feature-badge">
+      <span class="feature-badge-icon">📷</span>
+      <span class="feature-badge-title">Pose-free</span>
+      <span class="feature-badge-desc">Works without camera poses</span>
+    </div>
+    <div class="feature-badge">
+      <span class="feature-badge-icon">🎯</span>
+      <span class="feature-badge-title">Zero-shot</span>
+      <span class="feature-badge-desc">No 3D supervision required</span>
+    </div>
+  </div>
+
+  <div class="teaser-carousel" id="teaser-carousel">
+    <div class="teaser-vid-box">
+      <button class="c-arr prev" onclick="teaserMove(-1)">&#8592;</button>
+      <video id="teaser-video" autoplay muted loop playsinline>
+        <source src="./assets/videos/demo_scene0598_01.mp4" type="video/mp4">
+      </video>
+      <button class="c-arr next" onclick="teaserMove(1)">&#8594;</button>
+      <div class="carousel-nav-bar">
+        <div class="c-dots" id="teaser-dots">
+          <div class="c-dot on" onclick="teaserGoTo(0)"></div>
+          <div class="c-dot" onclick="teaserGoTo(1)"></div>
+          <div class="c-dot" onclick="teaserGoTo(2)"></div>
+        </div>
+        <div class="carousel-counter" id="teaser-counter">1 / 3</div>
+      </div>
+    </div>
+    <div class="label-panel">
+      <div class="label-panel-title">Detected objects</div>
+      <div class="label-list" id="teaser-labels"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ABSTRACT -->
+<section class="page-section reveal" id="abstract">
+  <div class="section-wrap">
+    <h2 style="text-align:center;">Abstract</h2>
+    <div class="abstract-card">
+      Open-vocabulary 3D object detection aims to localize and recognize objects beyond a fixed training taxonomy. In multi-view RGB settings, recent approaches often decouple geometry-based instance construction from semantic labeling, generating class-agnostic fragments and assigning open-vocabulary categories post hoc. While flexible, such decoupling leaves instance construction governed primarily by geometric consistency, without semantic constraints during merging. When geometric evidence is view-dependent and incomplete, this geometry-only merging can lead to irreversible association errors, including over-merging of distinct objects or fragmentation of a single instance. We propose Group3D, a multi-view open-vocabulary 3D detection framework that integrates semantic constraints directly into the instance construction process. Group3D maintains a scene-adaptive vocabulary derived from a multimodal large language model (MLLM) and organizes it into semantic compatibility groups that encode plausible cross-view category equivalence. These groups act as merge-time constraints: 3D fragments are associated only when they satisfy both semantic compatibility and geometric consistency. This semantically gated merging mitigates geometry-driven over-merging while absorbing multi-view category variability. Group3D supports both pose-known and pose-free settings, relying only on RGB observations.
+      Experiments on ScanNet and ARKitScenes demonstrate that Group3D achieves state-of-the-art performance in multi-view open-vocabulary 3D detection, while exhibiting strong generalization in zero-shot scenarios.
+    </div>
+  </div>
+</section>
+
+<!-- METHOD -->
+<section class="page-section reveal" id="method">
+  <div class="section-wrap">
+    <h2 style="text-align:center;">Method</h2>
+    <div class="figure-block">
+      <div style="text-align:center;">
+        <img src="./assets/method.jpg" alt="Group3D pipeline" width="90%">
+      </div>
+      <div class="method-caption">
+        Given multi-view RGB images, an MLLM predicts object categories across views, which are aggregated into a Scene Vocabulary Memory.
+        Category-aware masks are lifted into 3D to construct a 3D Fragment Memory. The MLLM then organizes the vocabulary into semantic compatibility groups, which gate fragment merging together with geometric consistency to produce the final open-vocabulary 3D object instances.
+        Finally, multi-view evidence is accumulated to determine the final open-vocabulary category and 3D bounding box for each object instance.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUANTITATIVE -->
+<div class="page-section" id="results">
+  <div class="tables-wrap reveal">
+    <h2 style="text-align:center;">Quantitative Results</h2>
+    <div class="table-block">
+      <div class="table-inner">
+        <div class="table-scroll">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th rowspan="2" style="vertical-align:middle;">Method</th>
+                <th rowspan="2" style="vertical-align:middle;text-align:center;">Pose-free</th>
+                <th rowspan="2" style="vertical-align:middle;text-align:center;">Zero-shot</th>
+                <th colspan="2" style="text-align:center;border-bottom:1px solid #ccc;">ScanNet20</th>
+                <th colspan="2" style="text-align:center;border-bottom:1px solid #ccc;">ScanNet60</th>
+              </tr>
+              <tr style="border-bottom:2px solid #222;">
+                <th style="text-align:center;">mAP<sub>25</sub></th>
+                <th style="text-align:center;">mAP<sub>50</sub></th>
+                <th style="text-align:center;">mAP<sub>25</sub></th>
+                <th style="text-align:center;">mAP<sub>50</sub></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="7" style="background:#f5f5f3;font-size:0.78rem;font-weight:600;color:#888;letter-spacing:0.05em;padding:6px 8px;">Point cloud-based</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2211.11682" target="_blank">Det-PointCLIPv2</a><span class="venue-badge">ICCV 23</span></td><td class="dash-c">–</td><td class="cross">✗</td><td class="dash-c">–</td><td class="dash-c">–</td><td>0.2</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2103.00020" target="_blank">3D-CLIP</a><span class="venue-badge">ICML 21</span></td><td class="dash-c">–</td><td class="cross">✗</td><td class="dash-c">–</td><td class="dash-c">–</td><td>4.0</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2304.00788" target="_blank">OV-3DET</a><span class="venue-badge">CVPR 23</span></td><td class="dash-c">–</td><td class="cross">✗</td><td>18.0</td><td class="dash-c">–</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2310.02960" target="_blank">CoDa</a><span class="venue-badge">NeurIPS 23</span></td><td class="dash-c">–</td><td class="cross">✗</td><td>19.3</td><td class="dash-c">–</td><td>9.0</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2407.05256" target="_blank">INHA</a><span class="venue-badge">ECCV 24</span></td><td class="dash-c">–</td><td class="cross">✗</td><td class="dash-c">–</td><td class="dash-c">–</td><td>10.7</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2407.08931" target="_blank">GLIS</a><span class="venue-badge">ECCV 24</span></td><td class="dash-c">–</td><td class="cross">✗</td><td>20.8</td><td class="dash-c">–</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2410.24001" target="_blank">ImOV3D</a><span class="venue-badge">NeurIPS 24</span></td><td class="dash-c">–</td><td class="cross">✗</td><td>21.5</td><td class="dash-c">–</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2403.19580" target="_blank">OV-Uni3DETR</a><span class="venue-badge">ECCV 24</span></td><td class="dash-c">–</td><td class="cross">✗</td><td>25.3</td><td class="dash-c">–</td><td>19.4</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>0</sub></a><span class="venue-badge">CVPR 26</span></td><td class="dash-c">–</td><td class="check">✓</td><td>34.7</td><td>23.9</td><td>27.1</td><td>18.7</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>1</sub></a><span class="venue-badge">CVPR 26</span></td><td class="dash-c">–</td><td class="cross">✗</td><td>37.2</td><td>26.3</td><td>32.0</td><td>20.8</td></tr>
+              <tr><td colspan="7" style="background:#f5f5f3;font-size:0.78rem;font-weight:600;color:#888;letter-spacing:0.05em;padding:6px 8px;">Multi-view image-based</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2403.19580" target="_blank">OV-Uni3DETR</a><span class="venue-badge">ECCV 24</span></td><td class="cross">✗</td><td class="cross">✗</td><td class="dash-c">–</td><td class="dash-c">–</td><td>11.2</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2508.20063" target="_blank">OpenM3D</a><span class="venue-badge">ICCV 25</span></td><td class="cross">✗</td><td class="cross">✗</td><td>19.8</td><td>7.3</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>0</sub></a><span class="venue-badge">CVPR 26</span></td><td class="cross">✗</td><td class="check">✓</td><td>30.5</td><td>17.3</td><td>22.0</td><td>10.4</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>1</sub></a><span class="venue-badge">CVPR 26</span></td><td class="cross">✗</td><td class="cross">✗</td><td>32.8</td><td>15.5</td><td>23.9</td><td>10.8</td></tr>
+              <tr class="ours"><td><b>Group3D (Ours)</b></td><td class="cross">✗</td><td class="check">✓</td><td><b>51.1</b></td><td><b>27.4</b></td><td><b>29.1</b></td><td><b>13.9</b></td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>0</sub></a><span class="venue-badge">CVPR 26</span></td><td class="check">✓</td><td class="check">✓</td><td>24.2</td><td>8.8</td><td>13.3</td><td>4.1</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>1</sub></a><span class="venue-badge">CVPR 26</span></td><td class="check">✓</td><td class="cross">✗</td><td>27.9</td><td>10.4</td><td>15.3</td><td>5.6</td></tr>
+              <tr class="ours"><td><b>Group3D (Ours)</b></td><td class="check">✓</td><td class="check">✓</td><td><b>41.2</b></td><td><b>18.5</b></td><td><b>22.3</b></td><td><b>8.5</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-footnote">Zoo3D<sub>0</sub> and Zoo3D<sub>1</sub> denote two variants of Zoo3D: zero-shot and self-supervised.</p>
+        <p class="table-desc">We compare Group3D with prior open-vocabulary 3D detection approaches under two regimes, pose-known and pose-free. We focus exclusively on the multi-view RGB setting and report comparisons to both point cloud-based open-vocabulary detectors and multi-view image-based pipelines.</p>
+      </div>
+    </div>
+    <div class="table-block">
+      <div class="table-inner">
+        <div class="table-scroll">
+          <table class="result-table">
+            <thead>
+              <tr>
+                <th rowspan="2" style="vertical-align:middle;">Method</th>
+                <th rowspan="2" style="vertical-align:middle;text-align:center;">Pose-free</th>
+                <th rowspan="2" style="vertical-align:middle;text-align:center;">Zero-shot</th>
+                <th colspan="2" style="text-align:center;border-bottom:1px solid #ccc;">ScanNet200</th>
+                <th colspan="2" style="text-align:center;border-bottom:1px solid #ccc;">ARKitScenes</th>
+              </tr>
+              <tr style="border-bottom:2px solid #222;">
+                <th style="text-align:center;">mAP<sub>25</sub></th>
+                <th style="text-align:center;">mAP<sub>50</sub></th>
+                <th style="text-align:center;">mAP<sub>25</sub></th>
+                <th style="text-align:center;">mAP<sub>50</sub></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="7" style="background:#f5f5f3;font-size:0.78rem;font-weight:600;color:#888;letter-spacing:0.05em;padding:6px 8px;">Posed images</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2508.20063" target="_blank">OpenM3D</a><span class="venue-badge">ICCV 25</span></td><td class="cross">✗</td><td class="cross">✗</td><td>4.2</td><td class="dash-c">–</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>0</sub></a><span class="venue-badge">CVPR 26</span></td><td class="cross">✗</td><td class="check">✓</td><td>14.3</td><td>6.2</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>1</sub></a><span class="venue-badge">CVPR 26</span></td><td class="cross">✗</td><td class="cross">✗</td><td>16.5</td><td>6.3</td><td class="dash-c">–</td><td class="dash-c">–</td></tr>
+              <tr class="ours"><td><b>Group3D (Ours)</b></td><td class="cross">✗</td><td class="check">✓</td><td><b>17.9</b></td><td><b>8.7</b></td><td><b>20.5</b></td><td><b>5.9</b></td></tr>
+              <tr><td colspan="7" style="background:#f5f5f3;font-size:0.78rem;font-weight:600;color:#888;letter-spacing:0.05em;padding:6px 8px;">Unposed images</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>0</sub></a><span class="venue-badge">CVPR 26</span></td><td class="check">✓</td><td class="check">✓</td><td>8.3</td><td>2.9</td><td>13.0</td><td>2.6</td></tr>
+              <tr><td><a href="https://arxiv.org/abs/2511.20253" target="_blank">Zoo3D<sub>1</sub></a><span class="venue-badge">CVPR 26</span></td><td class="check">✓</td><td class="cross">✗</td><td>10.7</td><td>3.8</td><td>16.1</td><td>3.5</td></tr>
+              <tr class="ours"><td><b>Group3D (Ours)</b></td><td class="check">✓</td><td class="check">✓</td><td><b>12.6</b></td><td><b>5.7</b></td><td><b>18.4</b></td><td><b>4.5</b></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="table-footnote">Zoo3D<sub>0</sub> and Zoo3D<sub>1</sub> denote two variants of Zoo3D: zero-shot and self-supervised.</p>
+        <p class="table-desc">Group3D consistently outperforms prior methods on ScanNet200 (200-category) and ARKitScenes in both pose-known and pose-free settings, demonstrating strong generalization to larger open-vocabulary taxonomies and cross-domain 3D scenes.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- QUALITATIVE -->
+<div class="page-section" id="qualitative">
+  <div class="qual-wrap reveal">
+    <h2 style="text-align:center;">Qualitative Results</h2>
+    <div class="qual-legend" id="qual-legend"></div>
+    <div class="qual-slider">
+      <div class="qual-slide active">
+        <div class="qual-grid">
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0025_01_gt.glb" data-idx="0"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0025_01_pose.glb" data-idx="1"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0025_01_nopo.glb" data-idx="2"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+        </div>
+      </div>
+      <div class="qual-slide">
+        <div class="qual-grid">
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0164_03_gt.glb" data-idx="3"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0164_03_pose.glb" data-idx="4"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0164_03_nopo.glb" data-idx="5"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+        </div>
+      </div>
+      <div class="qual-slide">
+        <div class="qual-grid">
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0050_01_gt.glb" data-idx="6"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0050_01_pose.glb" data-idx="7"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0050_01_nopo.glb" data-idx="8"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+        </div>
+      </div>
+      <div class="qual-slide">
+        <div class="qual-grid">
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_gt.glb" data-idx="9"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_pose.glb" data-idx="10"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_nopo.glb" data-idx="11"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+        </div>
+      </div>
+      <div class="qual-slide">
+        <div class="qual-grid">
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0697_01_gt.glb" data-idx="12"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0697_01_pose.glb" data-idx="13"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0697_01_nopo.glb" data-idx="14"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="qual-nav">
+      <button class="qual-arr" onclick="qualMove(-1)">←</button>
+      <div class="qual-dots" id="qual-dots">
+        <div class="qual-dot active"></div>
+        <div class="qual-dot"></div>
+        <div class="qual-dot"></div>
+        <div class="qual-dot"></div>
+        <div class="qual-dot"></div>
+      </div>
+      <button class="qual-arr" onclick="qualMove(1)">→</button>
+    </div>
+  </div>
+</div>
+
+<!-- BIBTEX -->
+<div class="page-section" id="bibtex">
+  <div class="bibtex-wrap reveal">
+    <h2 style="text-align:center;">BibTeX</h2>
+    <div class="bibtex-block">
+      <div class="bibtex-header">
+        <span class="bibtex-header-label">citation.bib</span>
+        <button class="copy-btn" id="copy-btn" onclick="copyBibtex()">Copy</button>
+      </div>
+      <pre class="bibtex" id="bibtex-text">@inproceedings{kim2026group3d,
+  title     = {Group3D: MLLM-Driven Semantic Grouping for
+               Open-Vocabulary 3D Object Detection},
+  author    = {Kim, Youbin and Park, Jinho and Park, Hogun and Park, Eunbyung},
+  booktitle = {arXiv},
+  year      = {2026}
+}</pre>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Group3D · MLLM-Driven Semantic Grouping for Open-Vocabulary 3D Object Detection
+</footer>
+
+<script>
+/* ── TEASER CAROUSEL ── */
+const COLORS = ["#E63946","#4361EE","#2EC4B6","#FF6B35","#9B5DE5","#BACC18","#F72585","#00B4D8","#8B4513","#606C38","#3A0CA3","#70E000","#FF9B85","#457B9D","#F4A261","#C8C800"];
+const teaserScenes = [
+  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[7],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] },
+  { src: './assets/videos/demo_scene0100_00.mp4', sceneId: 'scene0100_00', labels: [{name:'mat',color:COLORS[0],count:3},{name:'towel',color:COLORS[3],count:2},{name:'bathtub',color:COLORS[1],count:1},{name:'toilet',color:COLORS[4],count:1},{name:'toilet paper',color:COLORS[7],count:1},{name:'trash can',color:COLORS[5],count:1},{name:'mirror',color:COLORS[12],count:1},{name:'cabinet',color:COLORS[2],count:1},{name:'bottle',color:COLORS[6],count:1},{name:'cup',color:COLORS[8],count:1},{name:'window',color:COLORS[9],count:1},{name:'sink',color:COLORS[11],count:1},{name:'slipper',color:COLORS[14],count:1},{name:'stool',color:COLORS[10],count:1},{name:'toothbrush',color:COLORS[13],count:1},{name:'door',color:COLORS[15],count:1}] },
+  { src: './assets/videos/demo_scene0618_00.mp4', sceneId: 'scene0618_00', labels: [{name:'chair',color:COLORS[1],count:10},{name:'table',color:COLORS[0],count:6},{name:'pool table',color:COLORS[4],count:1},{name:'pipe',color:COLORS[5],count:1},{name:'radiator',color:COLORS[3],count:1},{name:'window',color:COLORS[2],count:1}] }
+];
+
+let tCur = 0;
+const tVid = document.getElementById('teaser-video');
+const tDots = document.querySelectorAll('.c-dot');
+const tCount = document.getElementById('teaser-counter');
+const tLabels = document.getElementById('teaser-labels');
+
+function hexToRgb(hex) { return [1,3,5].map(i => parseInt(hex.slice(i,i+2),16)).join(','); }
+let activeLabel = null;
+function labelSrc(sid, name) { return `./assets/videos/demo_${sid}_${name.replace(/ /g,'_')}.mp4`; }
+
+function switchVideo(src, preserveTime) {
+  const t = preserveTime ? tVid.currentTime : 0;
+  tVid.src = src; tVid.load();
+  tVid.addEventListener('loadedmetadata', () => { if(preserveTime) tVid.currentTime=t; tVid.play(); }, {once:true});
+}
+function renderTeaserLabels(labels, scene) {
+  tLabels.innerHTML = ''; activeLabel = null;
+  labels.forEach((lb, i) => {
+    const el = document.createElement('div');
+    el.className = 'label-item expandable';
+    el.innerHTML = `<div class="label-dot" style="background:${lb.color}"></div><span class="label-name">${lb.name}</span><span class="label-count">×${lb.count}</span>`;
+    el.addEventListener('click', () => {
+      const isSame = el.classList.contains('selected');
+      tLabels.querySelectorAll('.label-item').forEach(it => { it.classList.remove('selected'); it.style.borderColor=''; it.style.background=''; });
+      if (isSame) { activeLabel=null; switchVideo(scene.src,true); }
+      else { el.classList.add('selected'); el.style.borderColor=lb.color; el.style.background=`rgba(${hexToRgb(lb.color)},0.07)`; activeLabel=lb.name; switchVideo(labelSrc(scene.sceneId,lb.name),true); }
+    });
+    tLabels.appendChild(el);
+    setTimeout(() => el.classList.add('visible'), i*60);
+  });
+}
+function teaserGoTo(n) {
+  tCur = (n + teaserScenes.length) % teaserScenes.length;
+  const s = teaserScenes[tCur];
+  tVid.src=s.src; tVid.load(); tVid.play();
+  tDots.forEach((d,i) => d.classList.toggle('on', i===tCur));
+  tCount.textContent = (tCur+1)+' / '+teaserScenes.length;
+  activeLabel=null; renderTeaserLabels(s.labels, s);
+}
+function teaserMove(d) { teaserGoTo(tCur+d); }
+renderTeaserLabels(teaserScenes[0].labels, teaserScenes[0]);
+tVid.playbackRate = 0.8;
+function syncPanelHeight() {
+  const vb = document.querySelector('.teaser-vid-box');
+  const p  = document.querySelector('.label-panel');
+  if (vb && p) p.style.height = vb.offsetHeight+'px';
+}
+syncPanelHeight();
+window.addEventListener('resize', syncPanelHeight);
+tVid.addEventListener('loadedmetadata', syncPanelHeight);
+
+/* ── QUALITATIVE SLIDER ── */
+const qualData = [
+  { labels: [{color:'#3F3BD9',name:'couch'},{color:'#D83BD3',name:'telephone'},{color:'#F43A3A',name:'monitor'},{color:'#45C7C4',name:'door'},{color:'#3EE33A',name:'fan'},{color:'#E2E432',name:'pillow'}] },
+  { labels: [{color:'#3F3BD9',name:'refrigerator'},{color:'#F43A3A',name:'coffee maker'},{color:'#45C7C4',name:'range hood'},{color:'#3EE33A',name:'stove'},{color:'#E2E432',name:'microwave'}] },
+  { labels: [{color:'#3F3BD9',name:'desk'},{color:'#F43A3A',name:'piano'},{color:'#45C7C4',name:'laptop'},{color:'#3EE33A',name:'printer'},{color:'#E2E432',name:'ottoman'}] },
+  { labels: [{color:'#3F3BD9',name:'chair'},{color:'#F43A3A',name:'bookshelf'},{color:'#E2E432',name:'desk'},{color:'#3EE33A',name:'cabinet'}] },
+  { labels: [{color:'#F43A3A',name:'pillow'},{color:'#E2E432',name:'dresser'},{color:'#3EE33A',name:'nightstand'}] },
+];
+
+let qCur = 0;
+const qSlides = document.querySelectorAll('.qual-slide');
+const qDots   = document.querySelectorAll('.qual-dot');
+const qLegend = document.getElementById('qual-legend');
+
+function renderQualLegend(labels) {
+  qLegend.innerHTML = labels.map((lb, i) =>
+    `<div class="qual-legend-item" style="animation-delay:${i*60}ms">
+       <div class="qual-legend-dot" style="background:${lb.color}"></div>
+       <span>${lb.name}</span>
+     </div>`
+  ).join('');
+}
+
+function qualGoTo(n) {
+  // Pause viewers in current slide
+  qSlides[qCur].querySelectorAll('.glb-viewer').forEach(c => {
+    const reg = viewerRegistry.find(r => r.container === c);
+    if (reg) reg.pause();
+  });
+  qSlides[qCur].classList.remove('active');
+  qDots[qCur].classList.remove('active');
+  qCur = (n + qSlides.length) % qSlides.length;
+  qSlides[qCur].classList.add('active');
+  qDots[qCur].classList.add('active');
+  renderQualLegend(qualData[qCur].labels);
+  // Lazy-load then resume
+  initViewersInSlide(qSlides[qCur]);
+  qSlides[qCur].querySelectorAll('.glb-viewer').forEach(c => {
+    const reg = viewerRegistry.find(r => r.container === c);
+    if (reg) reg.resume();
+  });
+}
+function qualMove(d) { qualGoTo(qCur + d); }
+qDots.forEach((d, i) => d.addEventListener('click', () => qualGoTo(i)));
+renderQualLegend(qualData[0].labels);
+
+/* ── BIBTEX COPY ── */
+function copyBibtex() {
+  const text = document.getElementById('bibtex-text').innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!'; btn.classList.add('copied');
+    setTimeout(() => { btn.textContent='Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+/* ── SCROLL REVEAL ── */
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+<!-- Three.js GLB viewer — lazy loaded per slide, simultaneous reveal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+function loadScript(url) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = url; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+const loadedIdx = new Set();
+const viewerRegistry = [];
+
+function initViewersInSlide(slide) {
+  const containers = [...slide.querySelectorAll('.glb-viewer')].filter(c => !loadedIdx.has(c.dataset.idx));
+  if (containers.length === 0) return;
+
+  let readyCount = 0;
+  containers.forEach(container => {
+    loadedIdx.add(container.dataset.idx);
+    initSingleViewer(container, () => {
+      readyCount++;
+      if (readyCount === containers.length) {
+        // All GLBs ready — reveal canvases and hide spinners simultaneously
+        containers.forEach(c => {
+          const ph = c.querySelector('.qual-placeholder');
+          if (ph) ph.style.display = 'none';
+          const canvas = c.querySelector('canvas');
+          if (canvas) canvas.style.opacity = '1';
+        });
+      }
+    });
+  });
+}
+
+function initSingleViewer(container, onReady) {
+  const src = container.dataset.src;
+  const w = container.clientWidth || 400;
+  const h = container.clientHeight || 392;
+
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(w, h);
+  renderer.outputEncoding = THREE.LinearEncoding;
+  renderer.domElement.style.opacity = '0'; // hidden until all 3 are ready
+  renderer.domElement.style.transition = 'opacity 0.3s ease';
+  container.appendChild(renderer.domElement);
+
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0xf8f8f6);
+
+  const camera = new THREE.PerspectiveCamera(45, w / h, 0.01, 1000);
+
+  const ambient = new THREE.AmbientLight(0xffffff, 1.5);
+  scene.add(ambient);
+  const dir1 = new THREE.DirectionalLight(0xffffff, 1.0);
+  dir1.position.set(5, 10, 7); scene.add(dir1);
+  const dir2 = new THREE.DirectionalLight(0xffffff, 0.5);
+  dir2.position.set(-5, -2, -5); scene.add(dir2);
+
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.minDistance = 0.5;
+  controls.maxDistance = 50;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.6;
+  renderer.domElement.addEventListener('pointerdown', () => { controls.autoRotate = false; });
+
+  const loader = new THREE.GLTFLoader();
+  loader.load(src, (gltf) => {
+    const model = gltf.scene;
+    const box = new THREE.Box3().setFromObject(model);
+    const center = box.getCenter(new THREE.Vector3());
+    const size = box.getSize(new THREE.Vector3());
+    const maxDim = Math.max(size.x, size.y, size.z);
+    const scale = 3 / maxDim;
+    model.scale.setScalar(scale);
+    model.position.sub(center.multiplyScalar(scale));
+    scene.add(model);
+
+    model.traverse(child => {
+      if (!child.isMesh) return;
+      const hasVC = !!(child.geometry && child.geometry.attributes.color);
+      const mats = Array.isArray(child.material) ? child.material : [child.material];
+      const newMats = mats.map(mat => new THREE.MeshBasicMaterial({
+        vertexColors: hasVC,
+        color: hasVC ? 0xffffff : (mat.color || new THREE.Color(1,1,1)),
+        map: mat.map || null,
+        side: THREE.DoubleSide,
+        transparent: mat.transparent || false,
+        opacity: mat.opacity !== undefined ? mat.opacity : 1.0,
+      }));
+      child.material = newMats.length === 1 ? newMats[0] : newMats;
+    });
+
+    const sphere = box.getBoundingSphere(new THREE.Sphere());
+    const r = sphere.radius * scale;
+    camera.position.set(0, r * 0.5, r * 2.5);
+    controls.target.set(0, 0, 0);
+    controls.update();
+
+    // Notify parent that this viewer is ready — placeholder hidden by initViewersInSlide
+    if (onReady) onReady();
+  }, undefined, (err) => {
+    console.warn('GLB load failed:', src, err);
+    if (onReady) onReady(); // still count as done so others can show
+  });
+
+  let isActive = true;
+  function animate() {
+    if (!isActive) return;
+    requestAnimationFrame(animate);
+    controls.update();
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  viewerRegistry.push({
+    container,
+    pause()  { isActive = false; },
+    resume() { if (!isActive) { isActive = true; animate(); } }
+  });
+
+  new ResizeObserver(() => {
+    const cw = container.clientWidth;
+    const ch = container.clientHeight;
+    renderer.setSize(cw, ch);
+    camera.aspect = cw / ch;
+    camera.updateProjectionMatrix();
+  }).observe(container);
+}
+
+async function initGLBViewers() {
+  await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js');
+  await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+  const firstSlide = document.querySelector('.qual-slide.active');
+  if (firstSlide) initViewersInSlide(firstSlide);
+}
+
+initGLBViewers();
+</script>
+</body>
+</html>
