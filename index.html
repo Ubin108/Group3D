@@ -123,7 +123,7 @@ h1 .hl2 { color: var(--gold); }
 /* ── TEASER CAROUSEL ── */
 .teaser-wrap {
   display: grid; grid-template-columns: 1fr 200px;
-  gap: 14px; max-width: 800px; margin: 0 auto;
+  gap: 14px; max-width: 900px; margin: 0 auto;
   animation: fadeUp .7s .28s ease both;
   text-align: left; align-items: start; margin-bottom: 2.5rem;
 }
@@ -147,19 +147,19 @@ h1 .hl2 { color: var(--gold); }
 
 /* ── LABEL PANEL ── */
 .label-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; display: flex; flex-direction: column; overflow: hidden; }
-.label-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-.label-list { display: flex; flex-direction: column; gap: 9px; flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.label-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.label-list { display: flex; flex-direction: column; gap: 12px; flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
 .label-list::-webkit-scrollbar { width: 4px; }
 .label-list::-webkit-scrollbar-track { background: transparent; }
 .label-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
-.label-item { display: flex; align-items: center; gap: 8px; padding: 6px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; opacity: 0; transform: translateX(6px); transition: opacity .28s ease, transform .28s ease; cursor: default; }
+.label-item { display: flex; align-items: center; gap: 8px; padding: 8px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; opacity: 0; transform: translateX(6px); transition: opacity .28s ease, transform .28s ease; cursor: default; }
 .label-item.visible { opacity: 1; transform: translateX(0); }
 .label-item.expandable { cursor: pointer; transition: opacity .28s ease, transform .28s ease, border-color .15s, background .15s; }
 .label-item.expandable:hover { border-color: var(--border2); background: var(--bg2); }
 .label-item.selected { font-weight: 500; }
-.label-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.label-name { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; color: var(--text); flex: 1; }
-.label-count { font-family: 'JetBrains Mono', monospace; font-size: 0.62rem; font-weight: 500; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; background: var(--bg3); color: var(--muted); }
+.label-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.label-name { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--text); flex: 1; }
+.label-count { font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; font-weight: 500; padding: 1px 6px; border-radius: 10px; flex-shrink: 0; background: var(--bg3); color: var(--muted); }
 
 /* ── SHARED LAYOUT ── */
 .section-wrap { max-width: 980px; margin: 0 auto; padding: 3.0rem 2rem; }
@@ -542,7 +542,7 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
 /* ── TEASER CAROUSEL ── */
 const COLORS = ["#E63946","#4361EE","#2EC4B6","#FF6B35","#9B5DE5","#BACC18","#F72585","#00B4D8","#8B4513","#606C38","#3A0CA3","#70E000","#FF9B85","#457B9D","#F4A261","#C8C800"];
 const teaserScenes = [
-  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[7],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] }
+  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[6],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] }
 ];
 
 let tCur = 0;
