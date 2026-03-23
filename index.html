@@ -107,7 +107,6 @@ h1 .hl2 { color: var(--gold); }
 /* ── FEATURE BADGES ── */
 .feature-badges {
   display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
-  margin-bottom: 3rem;
   animation: fadeDown .6s .26s ease both;
 }
 .feature-badge {
@@ -122,11 +121,11 @@ h1 .hl2 { color: var(--gold); }
 .feature-badge-desc { font-family: 'Inter', sans-serif; font-size: 0.72rem; color: var(--muted); text-align: center; }
 
 /* ── TEASER CAROUSEL ── */
-.teaser-carousel {
+.teaser-wrap {
   display: grid; grid-template-columns: 1fr 200px;
-  gap: 14px; max-width: 860px; margin: 0 auto;
+  gap: 14px; max-width: 800px; margin: 0 auto;
   animation: fadeUp .7s .28s ease both;
-  text-align: left; align-items: start;
+  text-align: left; align-items: start; margin-bottom: 2.5rem;
 }
 .teaser-vid-box { background: #000; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; }
 .teaser-vid-box video { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
@@ -149,7 +148,7 @@ h1 .hl2 { color: var(--gold); }
 /* ── LABEL PANEL ── */
 .label-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 14px 12px; display: flex; flex-direction: column; overflow: hidden; }
 .label-panel-title { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-.label-list { display: flex; flex-direction: column; gap: 5px; flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
+.label-list { display: flex; flex-direction: column; gap: 9px; flex: 1; overflow-y: auto; overflow-x: hidden; scrollbar-width: thin; scrollbar-color: var(--border2) transparent; }
 .label-list::-webkit-scrollbar { width: 4px; }
 .label-list::-webkit-scrollbar-track { background: transparent; }
 .label-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
@@ -269,7 +268,7 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
 @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 @media (max-width: 640px) {
-  .teaser-carousel { grid-template-columns: 1fr; }
+  .teaser-wrap { grid-template-columns: 1fr; }
   .qual-grid { grid-template-columns: 1fr; }
 }
 </style>
@@ -303,7 +302,21 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
     </a>
   </div>
 
-  <div class="feature-badges">
+
+
+  <div class="teaser-wrap">
+    <div class="teaser-vid-box">
+      <video id="teaser-video" preload="auto" autoplay muted loop playsinline>
+        <source src="./assets/videos/demo_scene0598_01.mp4" type="video/mp4">
+      </video>
+    </div>
+    <div class="label-panel">
+      <div class="label-panel-title">Detected objects</div>
+      <div class="label-list" id="teaser-labels"></div>
+    </div>
+  </div>
+
+    <div class="feature-badges">
     <div class="feature-badge">
       <span class="feature-badge-icon">🔤</span>
       <span class="feature-badge-title">Open-vocabulary</span>
@@ -323,28 +336,6 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
       <span class="feature-badge-icon">🎯</span>
       <span class="feature-badge-title">Zero-shot</span>
       <span class="feature-badge-desc">No 3D supervision required</span>
-    </div>
-  </div>
-
-  <div class="teaser-carousel" id="teaser-carousel">
-    <div class="teaser-vid-box">
-      <button class="c-arr prev" onclick="teaserMove(-1)">&#8592;</button>
-      <video id="teaser-video" autoplay muted loop playsinline>
-        <source src="./assets/videos/demo_scene0598_01.mp4" type="video/mp4">
-      </video>
-      <button class="c-arr next" onclick="teaserMove(1)">&#8594;</button>
-      <div class="carousel-nav-bar">
-        <div class="c-dots" id="teaser-dots">
-          <div class="c-dot on" onclick="teaserGoTo(0)"></div>
-          <div class="c-dot" onclick="teaserGoTo(1)"></div>
-          <div class="c-dot" onclick="teaserGoTo(2)"></div>
-        </div>
-        <div class="carousel-counter" id="teaser-counter">1 / 3</div>
-      </div>
-    </div>
-    <div class="label-panel">
-      <div class="label-panel-title">Detected objects</div>
-      <div class="label-list" id="teaser-labels"></div>
     </div>
   </div>
 </header>
@@ -472,7 +463,7 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
   <div class="qual-wrap reveal">
     <h2 style="text-align:center;">Qualitative Results</h2>
     <div class="qual-legend" id="qual-legend"></div>
-    <div class="qual-slider">
+    <div class="qual-slider"> 
       <div class="qual-slide active">
         <div class="qual-grid">
           <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0025_01_gt.glb" data-idx="0"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
@@ -496,18 +487,18 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
       </div>
       <div class="qual-slide">
         <div class="qual-grid">
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_gt.glb" data-idx="9"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_pose.glb" data-idx="10"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_nopo.glb" data-idx="11"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0618_00_gt.glb" data-idx="9"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0618_00_pose.glb" data-idx="10"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0618_00_nopo.glb" data-idx="11"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
         </div>
       </div>
       <div class="qual-slide">
         <div class="qual-grid">
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0697_01_gt.glb" data-idx="12"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0697_01_pose.glb" data-idx="13"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0697_01_nopo.glb" data-idx="14"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0100_00_gt.glb" data-idx="12"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0100_00_pose.glb" data-idx="13"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0100_00_nopo.glb" data-idx="14"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
         </div>
-      </div>
+      </div>     
     </div>
     <div class="qual-nav">
       <button class="qual-arr" onclick="qualMove(-1)">←</button>
@@ -551,9 +542,7 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
 /* ── TEASER CAROUSEL ── */
 const COLORS = ["#E63946","#4361EE","#2EC4B6","#FF6B35","#9B5DE5","#BACC18","#F72585","#00B4D8","#8B4513","#606C38","#3A0CA3","#70E000","#FF9B85","#457B9D","#F4A261","#C8C800"];
 const teaserScenes = [
-  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[7],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] },
-  { src: './assets/videos/demo_scene0100_00.mp4', sceneId: 'scene0100_00', labels: [{name:'mat',color:COLORS[0],count:3},{name:'towel',color:COLORS[3],count:2},{name:'bathtub',color:COLORS[1],count:1},{name:'toilet',color:COLORS[4],count:1},{name:'toilet paper',color:COLORS[7],count:1},{name:'trash can',color:COLORS[5],count:1},{name:'mirror',color:COLORS[12],count:1},{name:'cabinet',color:COLORS[2],count:1},{name:'bottle',color:COLORS[6],count:1},{name:'cup',color:COLORS[8],count:1},{name:'window',color:COLORS[9],count:1},{name:'sink',color:COLORS[11],count:1},{name:'slipper',color:COLORS[14],count:1},{name:'stool',color:COLORS[10],count:1},{name:'toothbrush',color:COLORS[13],count:1},{name:'door',color:COLORS[15],count:1}] },
-  { src: './assets/videos/demo_scene0618_00.mp4', sceneId: 'scene0618_00', labels: [{name:'chair',color:COLORS[1],count:10},{name:'table',color:COLORS[0],count:6},{name:'pool table',color:COLORS[4],count:1},{name:'pipe',color:COLORS[5],count:1},{name:'radiator',color:COLORS[3],count:1},{name:'window',color:COLORS[2],count:1}] }
+  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[7],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] }
 ];
 
 let tCur = 0;
@@ -598,6 +587,23 @@ function teaserGoTo(n) {
 function teaserMove(d) { teaserGoTo(tCur+d); }
 renderTeaserLabels(teaserScenes[0].labels, teaserScenes[0]);
 tVid.playbackRate = 0.8;
+
+tVid.addEventListener('loadeddata', () => {
+  const labels = teaserScenes[0].labels;
+
+  function preloadBatch(i = 0) {
+    if (i >= labels.length) return;
+
+    const v = document.createElement('video');
+    v.src = labelSrc(teaserScenes[0].sceneId, labels[i].name);
+    v.preload = 'auto';
+
+    setTimeout(() => preloadBatch(i + 1), 300);
+  }
+
+  preloadBatch();
+});
+
 function syncPanelHeight() {
   const vb = document.querySelector('.teaser-vid-box');
   const p  = document.querySelector('.label-panel');
@@ -609,11 +615,11 @@ tVid.addEventListener('loadedmetadata', syncPanelHeight);
 
 /* ── QUALITATIVE SLIDER ── */
 const qualData = [
-  { labels: [{color:'#3F3BD9',name:'couch'},{color:'#D83BD3',name:'telephone'},{color:'#F43A3A',name:'monitor'},{color:'#45C7C4',name:'door'},{color:'#3EE33A',name:'fan'},{color:'#E2E432',name:'pillow'}] },
-  { labels: [{color:'#3F3BD9',name:'refrigerator'},{color:'#F43A3A',name:'coffee maker'},{color:'#45C7C4',name:'range hood'},{color:'#3EE33A',name:'stove'},{color:'#E2E432',name:'microwave'}] },
-  { labels: [{color:'#3F3BD9',name:'desk'},{color:'#F43A3A',name:'piano'},{color:'#45C7C4',name:'laptop'},{color:'#3EE33A',name:'printer'},{color:'#E2E432',name:'ottoman'}] },
-  { labels: [{color:'#3F3BD9',name:'chair'},{color:'#F43A3A',name:'bookshelf'},{color:'#E2E432',name:'desk'},{color:'#3EE33A',name:'cabinet'}] },
-  { labels: [{color:'#F43A3A',name:'pillow'},{color:'#E2E432',name:'dresser'},{color:'#3EE33A',name:'nightstand'}] },
+  { labels: [{color:'#F43A3A',name:'monitor'},{color:'#3F3BD9',name:'couch'},{color:'#D83BD3',name:'telephone'},{color:'#45C7C4',name:'door'},{color:'#3EE33A',name:'fan'},{color:'#E2E432',name:'pillow'}] },
+  { labels: [{color:'#F43A3A',name:'coffee maker'},{color:'#3F3BD9',name:'refrigerator'},{color:'#45C7C4',name:'range hood'},{color:'#3EE33A',name:'stove'},{color:'#E2E432',name:'microwave'}] },
+  { labels: [{color:'#F43A3A',name:'piano'},{color:'#3F3BD9',name:'desk'},{color:'#45C7C4',name:'laptop'},{color:'#3EE33A',name:'printer'},{color:'#E2E432',name:'ottoman'}] },
+  { labels: [{color:'#F43A3A',name:'pool table'},{color:'#3F3BD9',name:'window'},{color:'#E2E432',name:'table'},{color:'#45C7C4',name:'chair'},{color:'#3EE33A',name:'radiator'}] },
+  { labels: [{color:'#F43A3A',name:'toilet paper'},{color:'#3F3BD9',name:'toilet'},{color:'#E2E432',name:'mirror'},{color:'#45C7C4',name:'sink'},{color:'#3EE33A',name:'cup'},{color:'#D83BD3',name:'trash can'}] },
 ];
 
 let qCur = 0;
@@ -642,8 +648,6 @@ function qualGoTo(n) {
   qSlides[qCur].classList.add('active');
   qDots[qCur].classList.add('active');
   renderQualLegend(qualData[qCur].labels);
-  // Lazy-load then resume
-  initViewersInSlide(qSlides[qCur]);
   qSlides[qCur].querySelectorAll('.glb-viewer').forEach(c => {
     const reg = viewerRegistry.find(r => r.container === c);
     if (reg) reg.resume();
@@ -780,7 +784,7 @@ function initSingleViewer(container, onReady) {
     if (onReady) onReady(); // still count as done so others can show
   });
 
-  let isActive = true;
+  let isActive = false;
   function animate() {
     if (!isActive) return;
     requestAnimationFrame(animate);
@@ -807,11 +811,28 @@ function initSingleViewer(container, onReady) {
 async function initGLBViewers() {
   await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js');
   await loadScript('https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js');
+
+  const allSlides = document.querySelectorAll('.qual-slide');
+
+  allSlides.forEach(slide => {
+    initViewersInSlide(slide);
+  });
+
   const firstSlide = document.querySelector('.qual-slide.active');
-  if (firstSlide) initViewersInSlide(firstSlide);
+  if (firstSlide) {
+    firstSlide.querySelectorAll('.glb-viewer').forEach(c => {
+      const reg = viewerRegistry.find(r => r.container === c);
+      if (reg) reg.resume();
+    });
+  }
 }
 
 initGLBViewers();
+setTimeout(() => {
+  document.querySelectorAll('.qual-slide').forEach(slide => {
+    initViewersInSlide(slide);
+  });
+}, 1000);
 </script>
 </body>
 </html>
