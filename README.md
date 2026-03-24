@@ -10,7 +10,7 @@
 <br/>
 <br/><br/>
 
-<a href="https://arxiv.org/abs/2603.21944"><img src="https://img.shields.io/badge/arXiv-2603.18524-b31b1b.svg?style=flat-square" alt="arXiv"/></a>
+<a href="https://arxiv.org/abs/2603.21944"><img src="https://img.shields.io/badge/arXiv-2603.21944-b31b1b.svg?style=flat-square" alt="arXiv"/></a>
 <a href="https://ubin108.github.io/Group3D/"><img src="https://img.shields.io/badge/Project-Page-DAA520?style=flat-square" alt="Project Page"/></a>
 </div>
 
