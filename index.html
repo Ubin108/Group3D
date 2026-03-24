@@ -127,6 +127,14 @@ h1 .hl2 { color: var(--gold); }
   animation: fadeUp .7s .28s ease both;
   text-align: left; align-items: start; margin-bottom: 2.5rem;
 }
+
+.teaser-carousel {
+  display: grid; grid-template-columns: 1fr 200px;
+  gap: 14px; max-width: 900px; margin: 0 auto;
+  animation: fadeUp .7s .28s ease both;
+  text-align: left; align-items: start; margin-bottom: 2.5rem;
+}
+
 .teaser-vid-box { background: #000; border-radius: 12px; border: 1px solid var(--border); overflow: hidden; position: relative; }
 .teaser-vid-box video { width: 100%; display: block; aspect-ratio: 4/3; object-fit: cover; }
 .carousel-nav-bar { display: flex; align-items: center; justify-content: center; padding: 9px 14px; border-top: 1px solid var(--border); background: var(--bg2); gap: 10px; }
@@ -154,8 +162,6 @@ h1 .hl2 { color: var(--gold); }
 .label-list::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
 .label-item { display: flex; align-items: center; gap: 8px; padding: 8px 9px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; opacity: 0; transform: translateX(6px); transition: opacity .28s ease, transform .28s ease; cursor: default; }
 .label-item.visible { opacity: 1; transform: translateX(0); }
-.label-item.expandable { cursor: pointer; transition: opacity .28s ease, transform .28s ease, border-color .15s, background .15s; }
-.label-item.expandable:hover { border-color: var(--border2); background: var(--bg2); }
 .label-item.selected { font-weight: 500; }
 .label-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 .label-name { font-family: 'JetBrains Mono', monospace; font-size: 0.76rem; color: var(--text); flex: 1; }
@@ -255,7 +261,7 @@ h2 { font-family: 'Space Grotesk', sans-serif; font-size: clamp(1.4rem, 2.8vw, 2
 .qual-caption { font-family: 'Space Grotesk', sans-serif; font-size: 0.78rem; color: var(--muted); text-align: center; margin-top: 1rem; line-height: 1.5; }
 
 /* ── BIBTEX ── */
-.bibtex-wrap { max-width: 780px; margin: 0 auto; padding: 4.5rem 2rem; }
+.bibtex-wrap { max-width: 900px; margin: 0 auto; padding: 4.5rem 2rem; }
 .bibtex-block { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
 .bibtex-header { display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border); background: var(--bg3); }
 .bibtex-header-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; }
@@ -268,7 +274,7 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
 @keyframes fadeDown { from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
 @keyframes fadeUp   { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
 @media (max-width: 640px) {
-  .teaser-wrap { grid-template-columns: 1fr; }
+  .teaser-carousel { grid-template-columns: 1fr; }
   .qual-grid { grid-template-columns: 1fr; }
 }
 </style>
@@ -294,7 +300,7 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
     <span class="inst-gap"><sup>2</sup>Yonsei University</span>
   </p>
   <div class="btn-row">
-    <a class="btn btn-solid" href="#">
+    <a class="btn btn-solid" href="https://arxiv.org/abs/2603.21944">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>Paper
     </a>
     <a class="btn btn-ghost" href="https://github.com/Ubin108/Group3D">
@@ -302,19 +308,20 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
     </a>
   </div>
 
+    <div class="teaser-carousel" id="teaser-carousel">
+      <div class="teaser-vid-box">
+        <button class="c-arr prev" onclick="teaserMove(-1)">&#8592;</button>
+        <video id="teaser-video" autoplay muted loop playsinline>
+          <source src="./assets/videos/demo_scene0598_01.mp4" type="video/mp4">
+        </video>
+        <button class="c-arr next" onclick="teaserMove(1)">&#8594;</button>
 
-
-  <div class="teaser-wrap">
-    <div class="teaser-vid-box">
-      <video id="teaser-video" preload="auto" autoplay muted loop playsinline>
-        <source src="./assets/videos/demo_scene0598_01.mp4" type="video/mp4">
-      </video>
+      </div>
+      <div class="label-panel">
+        <div class="label-panel-title">Detected objects</div>
+        <div class="label-list" id="teaser-labels"></div>
+      </div>
     </div>
-    <div class="label-panel">
-      <div class="label-panel-title">Detected objects</div>
-      <div class="label-list" id="teaser-labels"></div>
-    </div>
-  </div>
 
     <div class="feature-badges">
     <div class="feature-badge">
@@ -487,18 +494,18 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
       </div>
       <div class="qual-slide">
         <div class="qual-grid">
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_gt.glb" data-idx="12"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_pose.glb" data-idx="13"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0378_00_nopo.glb" data-idx="14"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
+        </div>
+      </div>    
+      <div class="qual-slide">
+        <div class="qual-grid">
           <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0618_00_gt.glb" data-idx="9"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
           <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0618_00_pose.glb" data-idx="10"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
           <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0618_00_nopo.glb" data-idx="11"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
         </div>
-      </div>
-      <div class="qual-slide">
-        <div class="qual-grid">
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label gt">Ground Truth</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0100_00_gt.glb" data-idx="12"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pk">Pose-known</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0100_00_pose.glb" data-idx="13"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-          <div class="qual-cell"><div class="qual-cell-header"><span class="qual-col-label pf">Pose-free</span></div><div class="glb-viewer" data-src="./assets/glbs/scene0100_00_nopo.glb" data-idx="14"><div class="qual-placeholder"><div class="qual-placeholder-spinner"></div><div class="qual-placeholder-text">Loading…</div></div></div></div>
-        </div>
-      </div>     
+      </div> 
     </div>
     <div class="qual-nav">
       <button class="qual-arr" onclick="qualMove(-1)">←</button>
@@ -523,12 +530,14 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
         <span class="bibtex-header-label">citation.bib</span>
         <button class="copy-btn" id="copy-btn" onclick="copyBibtex()">Copy</button>
       </div>
-      <pre class="bibtex" id="bibtex-text">@inproceedings{kim2026group3d,
-  title     = {Group3D: MLLM-Driven Semantic Grouping for
-               Open-Vocabulary 3D Object Detection},
-  author    = {Kim, Youbin and Park, Jinho and Park, Hogun and Park, Eunbyung},
-  booktitle = {arXiv},
-  year      = {2026}
+      <pre class="bibtex" id="bibtex-text">@misc{kim2026group3dmllmdrivensemanticgrouping,
+      title={Group3D: MLLM-Driven Semantic Grouping for Open-Vocabulary 3D Object Detection}, 
+      author={Youbin Kim and Jinho Park and Hogun Park and Eunbyung Park},
+      year={2026},
+      eprint={2603.21944},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2603.21944}, 
 }</pre>
     </div>
   </div>
@@ -542,13 +551,13 @@ footer { border-top: 1px solid var(--border); padding: 2.2rem; text-align: cente
 /* ── TEASER CAROUSEL ── */
 const COLORS = ["#E63946","#4361EE","#2EC4B6","#FF6B35","#9B5DE5","#BACC18","#F72585","#00B4D8","#8B4513","#606C38","#3A0CA3","#70E000","#FF9B85","#457B9D","#F4A261","#C8C800"];
 const teaserScenes = [
-  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[6],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] }
+  { src: './assets/videos/demo_scene0598_01.mp4', sceneId: 'scene0598_01', labels: [{name:'chair',color:COLORS[4],count:6},{name:'table',color:COLORS[5],count:2},{name:'trash can',color:COLORS[1],count:2},{name:'monitor',color:COLORS[6],count:2},{name:'bookshelf',color:COLORS[0],count:1},{name:'backpack',color:COLORS[3],count:1},{name:'door',color:COLORS[2],count:1},{name:'keyboard',color:COLORS[6],count:1},{name:'mouse',color:COLORS[8],count:1}] },
+  { src: './assets/videos/demo_scene0100_00.mp4', sceneId: 'scene0100_00', labels: [{name:'mat',color:COLORS[0],count:3},{name:'towel',color:COLORS[3],count:2},{name:'bathtub',color:COLORS[1],count:1},{name:'toilet',color:COLORS[4],count:1},{name:'toilet paper',color:COLORS[7],count:1},{name:'trash can',color:COLORS[5],count:1},{name:'mirror',color:COLORS[12],count:1},{name:'cabinet',color:COLORS[2],count:1},{name:'bottle',color:COLORS[6],count:1},{name:'cup',color:COLORS[8],count:1},{name:'window',color:COLORS[9],count:1},{name:'sink',color:COLORS[11],count:1},{name:'slipper',color:COLORS[14],count:1},{name:'stool',color:COLORS[10],count:1},{name:'toothbrush',color:COLORS[13],count:1},{name:'door',color:COLORS[15],count:1}] },
+  { src: './assets/videos/demo_scene0618_00.mp4', sceneId: 'scene0618_00', labels: [{name:'chair',color:COLORS[1],count:10},{name:'table',color:COLORS[0],count:6},{name:'pool table',color:COLORS[4],count:1},{name:'pipe',color:COLORS[5],count:1},{name:'radiator',color:COLORS[3],count:1},{name:'window',color:COLORS[2],count:1}] }
 ];
 
 let tCur = 0;
 const tVid = document.getElementById('teaser-video');
-const tDots = document.querySelectorAll('.c-dot');
-const tCount = document.getElementById('teaser-counter');
 const tLabels = document.getElementById('teaser-labels');
 
 function hexToRgb(hex) { return [1,3,5].map(i => parseInt(hex.slice(i,i+2),16)).join(','); }
@@ -566,12 +575,6 @@ function renderTeaserLabels(labels, scene) {
     const el = document.createElement('div');
     el.className = 'label-item expandable';
     el.innerHTML = `<div class="label-dot" style="background:${lb.color}"></div><span class="label-name">${lb.name}</span><span class="label-count">×${lb.count}</span>`;
-    el.addEventListener('click', () => {
-      const isSame = el.classList.contains('selected');
-      tLabels.querySelectorAll('.label-item').forEach(it => { it.classList.remove('selected'); it.style.borderColor=''; it.style.background=''; });
-      if (isSame) { activeLabel=null; switchVideo(scene.src,true); }
-      else { el.classList.add('selected'); el.style.borderColor=lb.color; el.style.background=`rgba(${hexToRgb(lb.color)},0.07)`; activeLabel=lb.name; switchVideo(labelSrc(scene.sceneId,lb.name),true); }
-    });
     tLabels.appendChild(el);
     setTimeout(() => el.classList.add('visible'), i*60);
   });
@@ -580,29 +583,12 @@ function teaserGoTo(n) {
   tCur = (n + teaserScenes.length) % teaserScenes.length;
   const s = teaserScenes[tCur];
   tVid.src=s.src; tVid.load(); tVid.play();
-  tDots.forEach((d,i) => d.classList.toggle('on', i===tCur));
-  tCount.textContent = (tCur+1)+' / '+teaserScenes.length;
+
   activeLabel=null; renderTeaserLabels(s.labels, s);
 }
 function teaserMove(d) { teaserGoTo(tCur+d); }
 renderTeaserLabels(teaserScenes[0].labels, teaserScenes[0]);
 tVid.playbackRate = 0.8;
-
-tVid.addEventListener('loadeddata', () => {
-  const labels = teaserScenes[0].labels;
-
-  function preloadBatch(i = 0) {
-    if (i >= labels.length) return;
-
-    const v = document.createElement('video');
-    v.src = labelSrc(teaserScenes[0].sceneId, labels[i].name);
-    v.preload = 'auto';
-
-    setTimeout(() => preloadBatch(i + 1), 300);
-  }
-
-  preloadBatch();
-});
 
 function syncPanelHeight() {
   const vb = document.querySelector('.teaser-vid-box');
@@ -618,8 +604,9 @@ const qualData = [
   { labels: [{color:'#F43A3A',name:'monitor'},{color:'#3F3BD9',name:'couch'},{color:'#D83BD3',name:'telephone'},{color:'#45C7C4',name:'door'},{color:'#3EE33A',name:'fan'},{color:'#E2E432',name:'pillow'}] },
   { labels: [{color:'#F43A3A',name:'coffee maker'},{color:'#3F3BD9',name:'refrigerator'},{color:'#45C7C4',name:'range hood'},{color:'#3EE33A',name:'stove'},{color:'#E2E432',name:'microwave'}] },
   { labels: [{color:'#F43A3A',name:'piano'},{color:'#3F3BD9',name:'desk'},{color:'#45C7C4',name:'laptop'},{color:'#3EE33A',name:'printer'},{color:'#E2E432',name:'ottoman'}] },
+  { labels: [{color:'#F43A3A',name:'bookshelf'},{color:'#3F3BD9',name:'chair'},{color:'#E2E432',name:'desk'},{color:'#3EE33A',name:'cabinet'}] },
   { labels: [{color:'#F43A3A',name:'pool table'},{color:'#3F3BD9',name:'window'},{color:'#E2E432',name:'table'},{color:'#45C7C4',name:'chair'},{color:'#3EE33A',name:'radiator'}] },
-  { labels: [{color:'#F43A3A',name:'toilet paper'},{color:'#3F3BD9',name:'toilet'},{color:'#E2E432',name:'mirror'},{color:'#45C7C4',name:'sink'},{color:'#3EE33A',name:'cup'},{color:'#D83BD3',name:'trash can'}] },
+
 ];
 
 let qCur = 0;
