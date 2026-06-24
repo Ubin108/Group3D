@@ -42,12 +42,11 @@ cd Group3D
 ```bash
 conda create -n group3d python=3.12
 conda activate group3d
+
 pip install torch==2.7.0+cu118 torchvision --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
-cd third_party/Depth-Anything-3
-pip install --no-build-isolation git+https://github.com/nerfstudio-project/gsplat.git@0b4dddf04cb687367602c01196913cde6a743d70
-pip install -e ".[all]" --no-build-isolation
-cd ../..
+pip install -e third_party/Depth-Anything-3
+pip install git+https://github.com/QitaoZhao/gsplat.git --no-build-isolation
 pip install -e third_party/sam3
 ```
 
@@ -56,7 +55,7 @@ pip install -e third_party/sam3
 SAM3 model weights are gated on HuggingFace. Visit the [SAM3 model page](https://huggingface.co/facebook/sam3), agree to share your contact information with Meta, then log in:
 
 ```bash
-huggingface-cli login
+hf auth login
 ```
 
 ### 4. Set up API keys
