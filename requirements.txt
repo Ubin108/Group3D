@@ -1,0 +1,9 @@
+hatchling 
+editables 
+tqdm 
+pypng 
+openai 
+dotenv 
+pycocotools 
+psutil
+setuptools==80.9.0

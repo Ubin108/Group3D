@@ -1,0 +1,35 @@
+# -------------------------------------------------------
+# Group3D Configuration (pose-known)
+# -------------------------------------------------------
+
+pose_mode: "pose_known"
+
+voxel_size: 0.05
+conf_percentile: 15
+num_frames: 128
+sam_score_thresh: 0.5
+depth_thresh: 0.05
+num_category_hypotheses: 5
+
+vlm:
+  gpt_model: "gpt-5.1"
+  qwen_model: "Qwen/Qwen3-VL-8B-Instruct"
+  qwen_base_url: "http://localhost:8000/v1"
+
+merge:
+  voxel_iou_thresh: 0.01
+  voxel_contain_thresh: 0.1
+  post_voxel_iou_thresh: 0.1
+  post_voxel_contain_thresh: 0.1
+
+dataset:
+  root: "/PATH/TO/Group3D/data/ScanNetv2/scans"
+  name: "scannet"
+  image_subdir: "video_color_128"
+  label_filename: "objects_128.jsonl"
+  mask_root_pattern: "/PATH/TO/Group3D/data/ScanNetv2/scans/{scene}/sam3_masks"
+  points_subdir: "point_cloud_aligned_pose_known"
+
+output:
+  dir: "results_pose_known"
+  json_suffix: "_pose_known.json"
