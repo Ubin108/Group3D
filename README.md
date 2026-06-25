@@ -66,7 +66,6 @@ Create a `.env` file in the project root:
 OPENAI_API_KEY=sk-...
 ```
 
-If using a self-hosted Qwen model via vLLM, set `qwen_base_url` in the config instead.
 
 ## Data Preparation
 
@@ -178,7 +177,6 @@ python eval/evaluation.py --benchmark scannet200 \
 - `--scan_root`: directory containing scene PLY files (e.g. `scans_200/val/`)
 - `--gt_dir`: ScanNet scans directory containing `{scene_id}/` subdirs with `.aggregation.json` and `.segs.json`
 - `--split_txt`: val split scene list (optional; if omitted, scenes are inferred from `--pred_dir`)
-- If `--scan_root` is omitted, PLY files are looked up under `--gt_dir`
 
 ## Visualization
 
@@ -203,4 +201,4 @@ If you find this work useful, please cite:
 
 ## Acknowledgements
 
-We thank the authors of [SAM3](https://github.com/facebookresearch/sam3), [Depth-Anything-3](https://github.com/DepthAnything/Depth-Anything-V3) for their excellent work and open-source contributions.
+We thank the authors of [SAM3](https://github.com/facebookresearch/sam3), [Depth-Anything-3](https://github.com/ByteDance-Seed/depth-anything-3) for their excellent work and open-source contributions.
