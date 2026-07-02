@@ -1,0 +1,23 @@
+# Large scan data files (download separately)
+data/ScanNetv2/scans/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environments
+.env
+.venv
+env/
+venv/
+
+# Outputs / checkpoints
+*.ckpt
+*.pth
+*.pt
+
+third_party/
+group3d/
